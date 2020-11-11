@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/345245цйукцук.iml" filepath="$PROJECT_DIR$/.idea/modules/345245цйукцук.iml" group="345245цйукцук" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Online Chat/task/Online_Chat-task.iml" filepath="$PROJECT_DIR$/.idea/modules/Online Chat/task/Online_Chat-task.iml" group="345245цйукцук/Online_Chat-task" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Online Chat/task/Online_Chat-task_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Online Chat/task/Online_Chat-task_main.iml" group="345245цйукцук/Online_Chat-task" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Online Chat/task/Online_Chat-task_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Online Chat/task/Online_Chat-task_test.iml" group="345245цйукцук/Online_Chat-task" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/util/util.iml" filepath="$PROJECT_DIR$/.idea/modules/util/util.iml" group="345245цйукцук/util" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/util/util_main.iml" filepath="$PROJECT_DIR$/.idea/modules/util/util_main.iml" group="345245цйукцук/util" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/util/util_test.iml" filepath="$PROJECT_DIR$/.idea/modules/util/util_test.iml" group="345245цйукцук/util" />
+    </modules>
+  </component>
+</project>
