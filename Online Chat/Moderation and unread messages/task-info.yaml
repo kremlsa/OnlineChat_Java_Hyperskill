@@ -755,6 +755,9 @@ files:
 
     }
   learner_created: false
+- name: src/chat/server/Conversations.java
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/49/stages/270/implement
 status: Unchecked
 record: -1

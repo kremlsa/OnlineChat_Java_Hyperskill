@@ -10,6 +10,7 @@ public class Client {
     DataInputStream input;
     DataOutputStream output;
     Socket socket;
+    public static boolean isRun = true;
 
     public void go() {
 
@@ -17,19 +18,26 @@ public class Client {
 
         Thread readerThread = new Thread(new Client.ChatReader());
         Thread writerThread = new Thread(new Client.ChatWriter());
-        readerThread.start();
-        writerThread.start();
         try {
-            readerThread.join();
-        } catch (InterruptedException e) {
+            readerThread.start();
+            writerThread.start();
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
         try {
+            readerThread.join();
             writerThread.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
+        try {
+            socket.shutdownInput();
+            socket.shutdownOutput();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setUp() {
@@ -52,8 +60,13 @@ public class Client {
     class ChatReader implements Runnable {
         public void run() {
             try {
-                for (long stop = System.nanoTime() + TimeUnit.SECONDS.toNanos(10); stop > System.nanoTime(); ) {
-                    System.out.println(input.readUTF());
+                while (isRun) {
+                    String message = input.readUTF();
+                    if (message.equals("/exit")) {
+                        isRun = false;
+                        break;
+                    }
+                    System.out.println(message);
                 }
             } catch (IOException ex)
             {
@@ -64,10 +77,15 @@ public class Client {
 
     class ChatWriter implements Runnable {
         public void run() {
-            for (long stop = System.nanoTime() + TimeUnit.SECONDS.toNanos(10); stop > System.nanoTime(); ) {
+            while (isRun) {
                 try {
-                    output.writeUTF(sc.nextLine());
+                    String message = sc.nextLine();
+                    output.writeUTF(message);
                     output.flush();
+                    if (message.equals("/exit")) {
+                        isRun = false;
+                        break;
+                    }
 
                 } catch (Exception ex) {
                     ex.printStackTrace();

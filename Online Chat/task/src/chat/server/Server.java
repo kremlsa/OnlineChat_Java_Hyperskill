@@ -1,116 +1,118 @@
 package chat.server;
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
 
 public class Server {
-    ArrayList clients;
-    public static Scanner sc = new Scanner(System.in);
-    Socket socket;
+
+    static ServerBack backend;
 
     public class ClientHandler implements Runnable {
         DataInputStream input;
         DataOutputStream output;
         Socket sock;
+        String name;
+        int clientNumber;
 
-        public ClientHandler(Socket clientSocket) {
+        public ClientHandler(Socket clientSocket, int number) {
             try {
-                input = new DataInputStream(socket.getInputStream());
-                output = new DataOutputStream(socket.getOutputStream()
+                clientNumber = number;
                 sock = clientSocket;
+                input = new DataInputStream(sock.getInputStream());
+                output = new DataOutputStream(sock.getOutputStream());
 
-            } catch (Exception ex) { ex.printStackTrace(); }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
 
         public void run() {
-            String message;
             try {
-                while (true) {
-                    message = input.readUTF();
-                    if (message.equals("/exit")) {
-                        System.out.println("Client 1 disconnected!");
-                        break;
-                    } else {
-                        System.out.println("Client sent: " + message);
-                        System.out.println(answer());
+                boolean isRun = true;
+                output.writeUTF("Server: authorize or register");
+                output.flush();
+                while (isRun) {
+                    String command = input.readUTF();
+                    switch (command.split(" ")[0]) {
+                        case "/exit":
+                            output.writeUTF("/exit");
+                            output.flush();
+                            sock.close();
+                            System.out.println("Client " + clientNumber + " disconnected!");
+                            backend.clientOffline(name);
+                            isRun = false;
+                            break;
+                        case "/auth":
+                            name = backend.auth(input, output, command);
+                            break;
+                        case "/registration":
+                            name = backend.reg(input, output, command);
+                            break;
+                        case "/chat":
+                            backend.chat(input, output, command, name);
+                            break;
+                        case "/list":
+                            backend.listClients(output, name);
+                            break;
+                        default:
+                            if (command.split(" ")[0].startsWith("/")) {
+                                output.writeUTF("Server: incorrect command!");
+                                output.flush();
+                            } else {
+                                backend.unknown(input, output, command, name);
+                            }
+                            break;
                     }
                 }
-            } catch (Exception ex) { ex.printStackTrace(); }
-        }
-        public String answer() {
-            return "Sent to client 2: Count is 7";
-
-        }
-    }
-
-    public void go() {
-
-        setUp();
-
-        Thread readerThread = new Thread(new Server.ChatReader());
-        Thread writerThread = new Thread(new Server.ChatWriter());
-        readerThread.start();
-        writerThread.start();
-        try {
-            readerThread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        try {
-            writerThread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    private void setUp() {
-        try {
-            String address = "127.0.0.1";
-            int port = 23456;
-            ServerSocket server = new ServerSocket(port, 50, InetAddress.getByName(address));
-            Socket socket = server.accept();
-            input = new DataInputStream(socket.getInputStream());
-            output = new DataOutputStream(socket.getOutputStream());
-            System.out.println("Server started!");
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    public static void main(String[] args) {
-        new Server().go();
-    }
-    class ChatReader implements Runnable {
-        public void run() {
-            try {
-                for (long stop = System.nanoTime() + TimeUnit.SECONDS.toNanos(10); stop > System.nanoTime(); ) {
-                    System.out.println(input.readUTF());
-                }
-            } catch (IOException ex)
-            {
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
     }
 
-    class ChatWriter implements Runnable {
-        public void run() {
-            for (long stop = System.nanoTime() + TimeUnit.SECONDS.toNanos(10); stop > System.nanoTime(); ) {
-                try {
-                    output.writeUTF(sc.nextLine());
-                    output.flush();
 
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+    public static void main(String[] args) {
+        System.out.println("Server started!");
+        backend = new ServerBack();
+        new Server().go();
+    }
+
+    public boolean checkThreads() {
+        Thread t = Thread.currentThread();
+        String name = t.getName();
+        System.out.println("name = " + name);
+        return true;
+    }
+
+    public void go() {
+        ServerSocket srvsocket = null;
+        try {
+            try {
+                int i = 1;
+                srvsocket = new ServerSocket(23456, 0, InetAddress.getByName("127.0.0.1"));
+                srvsocket.setSoTimeout(7000);
+
+                while (true) {
+                    Socket clientSocket = srvsocket.accept();
+                    Thread t = new Thread(new ClientHandler(clientSocket, i));
+                    t.start();
+                    System.out.println("Client " + i + " connected!");
+                    i++;
                 }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        } finally {
+            try {
+                if (srvsocket != null)
+                    srvsocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
+        System.exit(0);
     }
 }
+

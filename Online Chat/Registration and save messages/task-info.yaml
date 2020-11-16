@@ -208,19 +208,26 @@ files:
                 return CheckResult.wrong("Client \"first\" should not mark " +
                         "it's messages with \"new\" since he's chatting with the \"second\" right now.");
             }
-            if (!client1Answer8.equals(
-                    "first: test\n" +
-                    "first: 1\n" +
-                    "first: 2\n" +
-                    "first: 3\n" +
-                    "first: 4\n" +
-                    "first: 5\n" +
-                    "first: 6\n" +
-                    "first: 7\n" +
-                    "first: 8\n" +
-                    "first: 9\n" +
-                    "second: 10")) {
-                return CheckResult.wrong("Client \"first\" output wrong messages.");
+
+            String expectedMessages =
+                "first: test\n" +
+                "first: 1\n" +
+                "first: 2\n" +
+                "first: 3\n" +
+                "first: 4\n" +
+                "first: 5\n" +
+                "first: 6\n" +
+                "first: 7\n" +
+                "first: 8\n" +
+                "first: 9\n" +
+                "second: 10";
+
+            if (!client1Answer8.equals(expectedMessages)) {
+                return CheckResult.wrong("Client \"first\" output wrong messages.\n\n" +
+                    "Expected:\n" +
+                    expectedMessages + "\n\n" +
+                    "Found:\n" +
+                    client1Answer8);
             }
 
             final String client3Answer5 = client3.getOutput().trim();
@@ -228,18 +235,25 @@ files:
                 return CheckResult.wrong("Client \"second\" should not mark " +
                         "it's messages with \"new\" since he's chatting with the \"first\" right now.");
             }
-            if (!client3Answer5.equals(
-                    "first: 1\n" +
-                    "first: 2\n" +
-                    "first: 3\n" +
-                    "first: 4\n" +
-                    "first: 5\n" +
-                    "first: 6\n" +
-                    "first: 7\n" +
-                    "first: 8\n" +
-                    "first: 9\n" +
-                    "second: 10")) {
-                return CheckResult.wrong("Client \"second\" output wrong messages.");
+
+            expectedMessages =
+                "first: 1\n" +
+                "first: 2\n" +
+                "first: 3\n" +
+                "first: 4\n" +
+                "first: 5\n" +
+                "first: 6\n" +
+                "first: 7\n" +
+                "first: 8\n" +
+                "first: 9\n" +
+                "second: 10";
+
+            if (!client3Answer5.equals(expectedMessages)) {
+                return CheckResult.wrong("Client \"second\" output wrong messages.\n\n" +
+                    "Expected:\n" +
+                    expectedMessages + "\n\n" +
+                    "Found:\n" +
+                    expectedMessages);
             }
 
             return CheckResult.correct();
@@ -275,19 +289,26 @@ files:
             tempClient.execute("/chat second");
             sleep(executePause);
             final String tempClientAnswer2 = tempClient.getOutput().trim();
-            if (!tempClientAnswer2.equals(
-                    "first: 1\n" +
-                    "first: 2\n" +
-                    "first: 3\n" +
-                    "first: 4\n" +
-                    "first: 5\n" +
-                    "first: 6\n" +
-                    "first: 7\n" +
-                    "first: 8\n" +
-                    "first: 9\n" +
-                    "second: 10")) {
+
+            String conversation =
+                "first: 1\n" +
+                "first: 2\n" +
+                "first: 3\n" +
+                "first: 4\n" +
+                "first: 5\n" +
+                "first: 6\n" +
+                "first: 7\n" +
+                "first: 8\n" +
+                "first: 9\n" +
+                "second: 10";
+
+            if (!tempClientAnswer2.equals(conversation)) {
                 return CheckResult.wrong("Conversation between \"first\" and \"second\" " +
-                        "hasn't been saved");
+                        "hasn't been saved\n\n" +
+                    "Expected:\n" +
+                    conversation + "\n\n" +
+                    "Found:\n" +
+                    tempClientAnswer2);
             }
 
             return CheckResult.correct();
@@ -296,6 +317,25 @@ files:
 
     }
   learner_created: false
+- name: src/chat/server/Command.java
+  visible: true
+  learner_created: true
+- name: src/chat/server/AuthCom.java
+  visible: true
+  learner_created: true
+- name: src/chat/server/ServerBack.java
+  visible: true
+  learner_created: true
+- name: src/chat/server/db/users.txt
+  visible: true
+  learner_created: true
+- name: src/chat/server/db/mess.txt
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/49/stages/269/implement
-status: Unchecked
-record: -1
+status: Solved
+feedback:
+  message: Congratulations! Continue on <a href="https://hyperskill.org/projects/49/stages/269/implement">JetBrains
+    Academy</a>
+  time: Sat, 14 Nov 2020 18:40:54 UTC
+record: 5
