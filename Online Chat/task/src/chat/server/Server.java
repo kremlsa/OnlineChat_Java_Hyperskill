@@ -4,8 +4,12 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Server {
+    Map<String, Socket> clientSockets = Collections.synchronizedMap(new HashMap<String, Socket>());
 
     static ServerBack backend;
 
@@ -42,19 +46,45 @@ public class Server {
                             sock.close();
                             System.out.println("Client " + clientNumber + " disconnected!");
                             backend.clientOffline(name);
+                            clientSockets.remove(name);
                             isRun = false;
                             break;
                         case "/auth":
                             name = backend.auth(input, output, command);
+                            clientSockets.put(name, sock);
+                            break;
+                        case "/kick":
+                            if (backend.isKick(output, name, command.split(" ")[1])) {
+                                backend.kickMess(command.split(" ")[1]);
+                                //backend.clientOffline(command.split(" ")[1]);
+                                //clientSockets.get(command.split(" ")[1]).close();
+                                //clientSockets.remove(name);
+                            }
                             break;
                         case "/registration":
                             name = backend.reg(input, output, command);
+                            clientSockets.put(name, sock);
+                            break;
+                        case "/grant":
+                            backend.grant(output, command, name);
+                            break;
+                        case "/revoke":
+                            backend.revoke(output, command, name);
                             break;
                         case "/chat":
                             backend.chat(input, output, command, name);
                             break;
                         case "/list":
                             backend.listClients(output, name);
+                            break;
+                        case "/stats":
+                            backend.getStats(output, command, name);
+                            break;
+                        case "/unread":
+                            backend.getUnread(output, name);
+                            break;
+                        case "/history":
+                            backend.getHistory(output, command, name);
                             break;
                         default:
                             if (command.split(" ")[0].startsWith("/")) {
